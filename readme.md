@@ -1,5 +1,7 @@
+configure ip in `client.js` and port in `echo.js`.
 
+start server run `sudo node echo.js`.
 
-TODO:
+navigate to ip.
 
-./public/client.js:8
+*Still not fully functional over the open internet*

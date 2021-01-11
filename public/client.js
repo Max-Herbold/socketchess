@@ -6,7 +6,7 @@ socket.on("dc", playerId => removePlayer(playerId));
 socket.on("outMove", m => recMove(m));
 
 
-function startGame(locked) { // Need to reset the board
+function startGame(locked) {
     console.log(locked);
     reset(!locked);
     boardStatus(!locked);
