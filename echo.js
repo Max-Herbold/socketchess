@@ -1,23 +1,12 @@
 const express = require("express");
 const socket = require('socket.io');
 const player = require("./player");
-// const cors = require('cors');
-const app = express();
 
-// socket.origins((_,callback) => {
-//   callback(null,true);
-// });
+const app = express();
 
 let server = app.listen(8001);
 console.log('The server is now running at http://localhost/');
 app.use(express.static("public"));
-
-// app.use(cors());
-//   app.all('/', function (request, response, next) {
-//     response.header("Access-Control-Allow-Origin", "*");
-//     response.header("Access-Control-Allow-Headers", "X-Requested-With");
-//     next();
-//   });
 
 let io = socket(server);
 
@@ -60,11 +49,10 @@ io.sockets.on('connection', function (socket) {
   var id = socket.conn.id;
   var ip = socket.conn.remoteAddress.split(":")[socket.conn.remoteAddress.split(":").length - 1];
   players.push(new player(ip, id, ++num, socket)); // issue with the num counter, need to loop thru players array to find unpaired players 
-  console.log("Number:", num);
+  console.log(`${ip} connected. (UID:${num}), Num players connected: ${players.length}`);
 
-  // ensures two free players are put into a game as soon as possible.
-  var game = [];
-  if (players.length % 2 == 0) {
+  function checkgame() {
+    var game = [];
     var c = 0;
     for (var i = 0; i < players.length; i++) {
       if (players[i].ingame == false) {
@@ -75,25 +63,18 @@ io.sockets.on('connection', function (socket) {
         break;
       }
     }
-
+    if (c < 2) {
+      return;
+    }
+    console.log(`Made game with ${players[game[0]].ip} (UID:${game[0]}) and ${players[game[1]].ip} (UID:${game[1]})`);
     players[game[0]].socket.emit("pair", false);
     makeGame(game[0], game[1]);
     makeGame(game[1], game[0]);
+  }
 
-
-    // old method, causing crashes.
-
-    /*var player1 = num-1; // write some code to pair two unpaired 
-    var player2 = num; //   connections with eachother in order. 
-
-    players[player1].socket.emit("pair", false);
-    // connections[player1].emit("pair", false);
-    //players[i].send("pair", pairi == null);
-    // socket.send("pair", player2==null);
-
-    makeGame(player1, player2);
-    makeGame(player2, player1);*/
-
+  // ensures two free players are put into a game as soon as possible.
+  if (players.length % 2 == 0) {
+    checkgame();
   }
 
   // Echo back messages from the client
@@ -122,13 +103,15 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on("disconnect", () => {
-    //io.sockets.emit("dc", socket.conn.id);
     players = players.filter(player => player.id !== socket.conn.id);
     for (var i = 0; i < players.length; i++) {
       if (players[i].ingamewith == socket.conn.id) {
         makeGame(i);
         players[i].socket.emit("dc");
       }
+    }
+    if (players.length % 2 == 0) {
+      checkgame();
     }
   });
 });

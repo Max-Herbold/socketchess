@@ -194,13 +194,6 @@ class game {
                 this.board[toy][tox] = new piece(tox,toy,"queen",p.color); // could add option to select piece
             }
         }
-        /* This was an older attempt for castling...
-        if (p.name == "king") { //handles castling
-            if (tox-fromx == 2) { // kingside // COUPLE OF RULES
-                this.move(7*!turn,7,5-3*!turn,7);
-                sendMove(7*!turn,7,5-3*!turn,7);
-            }
-        }*/
         prev = [[fromx,fromy],[tox,toy]];
         if (sequential < 2) { // if sending more than one move only toggle turn once.
             turn = !turn*1;
