@@ -10,6 +10,7 @@ var play = new game();
 var availMoves = [];
 var selected = null;
 var boardLocked = true;
+var prev = [];
 
 function resize() {
     canvas.width = window.innerWidth*0.5;
@@ -71,6 +72,11 @@ function draw() {
     for (var i = 0; i < 32; i++) {
         ctx.fillRect((2*(i%4)*canvas.width/8)+(canvas.width/8)*(Math.floor(i/4)%2==0),(Math.floor(i/4))*canvas.height/8, (canvas.width/8),canvas.height/8)
     }   // draws grey squares.
+
+    for (var i = 0; i < prev.length; i++) { // draw prev moves.
+        ctx.fillStyle = 'rgba(0,255,0,0.2)';
+        ctx.fillRect((prev[i][0]*canvas.width/8),prev[i][1]*canvas.height/8, (canvas.width/8),canvas.height/8)
+    }
 
     for (var i = 0; i < 8; i++) {
         for (var j = 0; j < 8; j++) {

@@ -5,7 +5,7 @@ const player = require("./player");
 const app = express();
 
 // socket.origins((_,callback) => {
-//   callback(nukk,true);
+//   callback(null,true);
 // });
 
 let server = app.listen(8001);

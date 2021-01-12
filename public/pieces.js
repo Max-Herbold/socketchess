@@ -171,6 +171,7 @@ class game {
                 this.board[toy][tox] = new piece(tox,toy,"queen",p.color); // could add option to select piece
             }
         }
+        prev = [[fromx,fromy],[tox,toy]];
         turn = !turn*1;
     }
 }
