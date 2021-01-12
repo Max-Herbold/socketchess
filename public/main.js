@@ -2,6 +2,8 @@ window.onresize = resize;
 window.onload = init;
 document.addEventListener("click", click);
 
+var debugging = false;
+
 var canvas = null;
 var ctx = null;
 var play = new game();
@@ -47,15 +49,6 @@ function click(event) {
                 sendMove(7*(x!=(2-turn)),7,(5-3*turn)+(2*(x!=(6-5*turn)))*(turn*2-1),7);
                 play.move(7*(x!=(2-turn)),7,(5-3*turn)+(2*(x!=(6-5*turn)))*(turn*2-1),7);
                 turn = !turn*1;
-
-                // old castling
-                /*if (!turn) {                            // turn == 0
-                    sendMove(7*(x!=2),7,5-2*(x!=6),7);
-                    play.move(7*(x!=2),7,5-2*(x!=6),7);
-                } else if (turn) {                      // turn == 1
-                    sendMove(7*(x!=1),7,2+2*(x!=1),7);
-                    play.move(7*(x!=1),7,2+2*(x!=1),7);
-                }*/
             }
             sendMove(selected[0],selected[1],x,y);
             play.move(selected[0],selected[1],x,y);
@@ -89,15 +82,7 @@ function draw() {
         ctx.fillRect((prev[i][0]*canvas.width/8),prev[i][1]*canvas.height/8, (canvas.width/8),canvas.height/8)
     }
 
-    for (var i = 0; i < 8; i++) {
-        for (var j = 0; j < 8; j++) {
-            if (play.board[i][j] != null) {
-                ctx.drawImage(play.board[i][j].img, j*(canvas.width/8), i*(canvas.height/8), canvas.width/8, canvas.height/8);
-            }
-        }
-    }
-
-    if (selected != null) {
+    if (selected != null) { // draws selected piece
         ctx.fillStyle = 'rgba(0,0,255,0.3)';
         ctx.strokeStyle = "blue";
         ctx.beginPath();
@@ -106,18 +91,29 @@ function draw() {
         ctx.stroke();
     }
 
-    for (var i = 0; i < availMoves.length; i++) {
-        ctx.fillStyle = 'rgba(128,128,0,0.3)';
-        ctx.strokeStyle = "yellow";
-        if (availMoves[i][2] == 1) {
-            ctx.fillStyle = 'rgba(225,0,0,0.3)';
-            ctx.strokeStyle = "red";
+    if (debugging) {
+        for (var i = 0; i < availMoves.length; i++) { // draws available moves
+            ctx.fillStyle = 'rgba(128,128,0,0.3)';
+            ctx.strokeStyle = "yellow";
+            if (availMoves[i][2] == 1) {
+                ctx.fillStyle = 'rgba(225,0,0,0.3)';
+                ctx.strokeStyle = "red";
+            }
+            ctx.beginPath();
+            ctx.ellipse(((2*availMoves[i][0]+1)*canvas.width)/16,((2*availMoves[i][1]+1)*canvas.height)/16,canvas.width/16,canvas.height/16,0,0, 2 * Math.PI)
+            ctx.fill();
+            ctx.stroke();
         }
-        ctx.beginPath();
-        ctx.ellipse(((2*availMoves[i][0]+1)*canvas.width)/16,((2*availMoves[i][1]+1)*canvas.height)/16,canvas.width/16,canvas.height/16,0,0, 2 * Math.PI)
-        ctx.fill();
-        ctx.stroke();
     }
+
+    for (var i = 0; i < 8; i++) { // draws pieces
+        for (var j = 0; j < 8; j++) {
+            if (play.board[i][j] != null) {
+                ctx.drawImage(play.board[i][j].img, j*(canvas.width/8), i*(canvas.height/8), canvas.width/8, canvas.height/8);
+            }
+        }
+    }
+
 }
 
 function reset(flipped) {
@@ -130,17 +126,3 @@ function init() {
     ctx = canvas.getContext("2d");
     resize();
 }
-
-/*
-
-TODO:
-
-turn taking.
-flipping board
-castling
-taking pawn with pawn moved two squares
-
- -- networking.
-
-
-*/
