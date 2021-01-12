@@ -2,7 +2,7 @@ window.onresize = resize;
 window.onload = init;
 document.addEventListener("click", click);
 
-var debugging = false;
+var debugging = false; // if true toggles visible dots.
 
 var canvas = null;
 var ctx = null;
@@ -83,12 +83,9 @@ function draw() {
     }
 
     if (selected != null) { // draws selected piece
-        ctx.fillStyle = 'rgba(0,0,255,0.3)';
-        ctx.strokeStyle = "blue";
-        ctx.beginPath();
-        ctx.ellipse(((2*selected[0]+1)*canvas.width)/16,((2*selected[1]+1)*canvas.height)/16,canvas.width/16,canvas.height/16,0,0, 2 * Math.PI)
-        ctx.fill();
-        ctx.stroke();
+        ctx.fillStyle = 'rgba(0,0,128,0.7)';
+        ctx.fillRect((selected[0]*canvas.width/8),selected[1]*canvas.height/8, (canvas.width/8),canvas.height/8)
+    
     }
 
     if (debugging) {
