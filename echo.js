@@ -40,11 +40,6 @@ function makeGame(i, pairi=null) {
 
   players[i].socket.emit("pair", players[i].color == 1); // 
   
-  //oldtrue
-  /*if (players[i].color == 0) { // 0 is white, if the player gains white their board will be unlocked first.
-    players[i].socket.emit("pair", true);
-  }*/
-  
   players[i].ingamewith = players[pairi].id;
 }
 
@@ -127,11 +122,12 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on("disconnect", () => {
-    io.sockets.emit("dc", socket.conn.id);
+    //io.sockets.emit("dc", socket.conn.id);
     players = players.filter(player => player.id !== socket.conn.id);
     for (var i = 0; i < players.length; i++) {
       if (players[i].ingamewith == socket.conn.id) {
         makeGame(i);
+        players[i].socket.emit("dc");
       }
     }
   });
