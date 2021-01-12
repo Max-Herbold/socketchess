@@ -12,19 +12,13 @@ class game {
         const c = [["b", "w"],["w","b"]];
         const colors = c[flip*1];
 
+        // pawn gen
         for (var i = 0; i < 2; i++) {
             for (var j = 0; j < 8; j++) {
                 this.board[1+i*5][j] = new piece(j,1+i*5,"pawn",colors[i])
             }
         }
 
-        //old pawn gen
-        /*for (var i = 0; i < 8; i++) {
-            this.board[6][i] = new piece(i,6,"pawn","w")
-        }
-        for (var i = 0; i < 8; i++) {
-            this.board[1][i] = new piece(i,1,"pawn","b")
-        }*/
         for (var i = 0; i < 2; i++) {
             this.board[0+7*i][0] = new piece(0,0+7*i,"rook",colors[i])
             this.board[0+7*i][7] = new piece(7,0+7*i,"rook",colors[i])
@@ -135,6 +129,32 @@ class game {
                 }
             }
         }
+        // castling king side
+        // turn == 0 for white
+        var mappedturn = !turn * 2 - 1;
+        if (!p.moved && this.board[y][x+3*mappedturn] != null) { // king side castle
+            if (!this.board[y][x+3*mappedturn].moved) {
+                var c = 0;
+                for (var i = 0; i < 2; i++){
+                    if (this.board[y][x+(i+1)*mappedturn] != null) {
+                        c++;
+                    }
+                }
+                if (c == 0) {
+                    moves.push([x+2*mappedturn,y,0]);
+                }
+            }
+        }
+        if (!p.moved && this.board[y][x-4*mappedturn] != null) { // queen side castle
+            if (!this.board[y][x-4*mappedturn].moved) {
+                for (var i = 0; i < 3; i++){
+                    if (this.board[y][x-(i+1)*mappedturn] != null) {
+                        return moves;
+                    }
+                }
+                moves.push([x-2*mappedturn,y,0]);
+            }
+        }
         return moves;
     }
 
@@ -163,6 +183,9 @@ class game {
 
     move(fromx, fromy, tox, toy) {
         var p = this.board[fromy][fromx]
+        if (p == null) {
+            return;
+        }
         this.board[toy][tox] = new piece(toy,tox,p.name,p.color);
         this.board[fromy][fromx] = null;
         this.board[toy][tox].moved = true;
@@ -171,8 +194,17 @@ class game {
                 this.board[toy][tox] = new piece(tox,toy,"queen",p.color); // could add option to select piece
             }
         }
+        /* This was an older attempt for castling...
+        if (p.name == "king") { //handles castling
+            if (tox-fromx == 2) { // kingside // COUPLE OF RULES
+                this.move(7*!turn,7,5-3*!turn,7);
+                sendMove(7*!turn,7,5-3*!turn,7);
+            }
+        }*/
         prev = [[fromx,fromy],[tox,toy]];
-        turn = !turn*1;
+        if (sequential < 2) { // if sending more than one move only toggle turn once.
+            turn = !turn*1;
+        }
     }
 }
 

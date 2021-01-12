@@ -7,7 +7,6 @@ socket.on("outMove", m => recMove(m));
 
 
 function startGame(locked) {
-    console.log(locked);
     reset(!locked);
     boardStatus(!locked);
 }
@@ -17,14 +16,17 @@ function removePlayer() {
     boardStatus(true);
 }
 
+var sequential = 0;
+
 function sendMove(fromx, fromy, tox, toy) {
     boardStatus(true); // remove this if intending to add premoving.
     socket.emit("move", 7-fromx, 7-fromy, 7-tox, 7-toy);
+    sequential = 0;
 }
 
 // fromx, fromy, tox, toy
 function recMove(m) {
-    console.log("got it...");
+    sequential++;
     boardStatus(false); // remove this if intending to add premoving.
     play.move(m[0],m[1],m[2],m[3]);
     draw();

@@ -2,8 +2,6 @@ window.onresize = resize;
 window.onload = init;
 document.addEventListener("click", click);
 
-// Testing push.
-
 var canvas = null;
 var ctx = null;
 var play = new game();
@@ -45,11 +43,24 @@ function click(event) {
     var y = Math.floor(8*event.clientY/canvas.height);
     if (x < 8 && x >= 0 && y < 8 && y >= 0) {
         if (checkValid(availMoves, [x,y])) {
+            if (play.board[selected[1]][selected[0]].name == "king" && Math.abs(x-selected[0]) == 2) { // handles castling
+                sendMove(7*(x!=(2-turn)),7,(5-3*turn)+(2*(x!=(6-5*turn)))*(turn*2-1),7);
+                play.move(7*(x!=(2-turn)),7,(5-3*turn)+(2*(x!=(6-5*turn)))*(turn*2-1),7);
+                turn = !turn*1;
+
+                // old castling
+                /*if (!turn) {                            // turn == 0
+                    sendMove(7*(x!=2),7,5-2*(x!=6),7);
+                    play.move(7*(x!=2),7,5-2*(x!=6),7);
+                } else if (turn) {                      // turn == 1
+                    sendMove(7*(x!=1),7,2+2*(x!=1),7);
+                    play.move(7*(x!=1),7,2+2*(x!=1),7);
+                }*/
+            }
             sendMove(selected[0],selected[1],x,y);
             play.move(selected[0],selected[1],x,y);
             availMoves = [];
             selected = null;
-            console.log(turn);
         } else if (play.board[y][x] == null || (selected != null && selected[0] == x && selected[1] == y)) {
             selected = null;
             availMoves = [];
