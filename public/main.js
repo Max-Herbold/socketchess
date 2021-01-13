@@ -1,6 +1,7 @@
 window.onresize = resize;
 window.onload = init;
 document.addEventListener("click", click);
+document.addEventListener('click touch', click);
 
 var debugging = false; // toggles visible dots.
 
