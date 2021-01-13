@@ -170,11 +170,13 @@ class game {
         }
     }
     // Finds king of a color and checks if its in check.
-    check(color) {
-        if (color == "w") {
-            color = "b";
-        } else {
-            color = "w";
+    check(color, swap=true) {
+        if (swap) {
+            if (color == "w") {
+                color = "b";
+            } else {
+                color = "w";
+            }
         }
         var coords = this.findPiece("king", color);
         var moves = []
@@ -196,7 +198,27 @@ class game {
         return false;
     }
 
+    newcheck(move=[0,0,1,1]) {
+        var fakegame = new game();
+        fakegame.board = [];
+        for (var i = 0; i < this.board.length; i++) {
+            var temp = [];
+            for (var j = 0; j < this.board[i].length; j++) {
+                if (this.board[i][j] == null) {
+                    temp.push(null);
+                } else {
+                    temp.push(new piece(this.board[i][j].x, this.board[i][j].y, this.board[i][j].name, this.board[i][j].color, this.board[i][j].moved));
+                }
+            }
+            fakegame.board.push(temp);
+        }
+        fakegame.move(move[0],move[1],move[2],move[3]);
+        // checkcheck
+        
+    }
+
     getMoves(x,y,flipped=false) {
+        // this.newcheck();
         var p = this.board[y][x];
         if (p.name == "pawn") {
             return this.pawnMoves(p,x,y,flipped);
@@ -235,13 +257,13 @@ class game {
 }
 
 class piece {
-    constructor(x,y,n,c) {
+    constructor(x,y,n,c,m=false) {
         this.x = x;
         this.y = y;
         this.name = n;
         this.color = c
         this.img = new Image();
         this.img.src = "assets/" + this.color + this.name + ".png";
-        this.moved = false;
+        this.moved = m;
     }
 }

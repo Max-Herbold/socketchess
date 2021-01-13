@@ -16,6 +16,7 @@ function startGame(locked) {
 }
 
 function removePlayer() {
+    document.getElementById('move').style = "";
     document.getElementById('move').textContent = "Player disconnected!";
     boardStatus(true);
 }
@@ -23,20 +24,22 @@ function removePlayer() {
 var sequential = 0;
 
 function sendMove(fromx, fromy, tox, toy) {
-    document.getElementById('move').textContent = "Waiting for opponents turn...";
     boardStatus(true); // remove this if intending to add premoving.
     socket.emit("move", 7-fromx, 7-fromy, 7-tox, 7-toy);
+    document.getElementById('move').style = "";
+    document.getElementById('move').textContent = "Waiting for opponents turn...";
     sequential = 0;
 }
 
 // fromx, fromy, tox, toy
 function recMove(m) {
-    document.getElementById('move').textContent = "Your turn!";
     sequential++;
-    boardStatus(false); // remove this if intending to add premoving.
     play.move(m[0],m[1],m[2],m[3]);
+    document.getElementById('move').textContent = "Your turn!";
     if (play.check(play.board[m[3]][m[2]].color)) {
+        document.getElementById('move').style = "font-weight: bold;";
         document.getElementById('move').textContent = "You're in check!";
     }
     draw();
+    boardStatus(false); // remove this if intending to add premoving.
 }

@@ -1,9 +1,18 @@
 window.onresize = resize;
 window.onload = init;
+
+// let e = 'ontouchstart' in window ? 'click touch' : 'click';
+
+// document.addEventListener(e, click);
+
 document.addEventListener("click", click);
 document.addEventListener('click touch', click);
 
-var debugging = false; // toggles visible dots.
+// document.addEventListener("click", click);
+// document.addEventListener('click touch', click);
+// document.addEventListener('touchstart', click);
+
+var debugging = true; // toggles visible dots.
 
 var canvas = null;
 var ctx = null;
