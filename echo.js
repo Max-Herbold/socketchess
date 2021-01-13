@@ -49,7 +49,7 @@ io.sockets.on('connection', function (socket) {
   var id = socket.conn.id;
   var ip = socket.conn.remoteAddress.split(":")[socket.conn.remoteAddress.split(":").length - 1];
   players.push(new player(ip, id, ++num, socket)); // issue with the num counter, need to loop thru players array to find unpaired players 
-  console.log(`${ip} connected. (UID:${num}), Num players connected: ${players.length}`);
+  console.log(`${ip} connected. (UID:${num}), (Connected: ${players.length})`);
 
   function checkgame() {
     var game = [];
@@ -122,7 +122,7 @@ io.sockets.on('connection', function (socket) {
   })
 
   socket.on("disconnect", () => {
-    console.log(`${ip} disconnected. (${num})`);
+    console.log(`${ip} disconnected. (Connected: ${players.length-1})`);
     players = players.filter(player => player.id !== socket.conn.id);
     for (var i = 0; i < players.length; i++) {
       if (players[i].ingamewith == socket.conn.id) {
