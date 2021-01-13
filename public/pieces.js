@@ -41,7 +41,7 @@ class game {
         }*/
         if (this.board[y+dir][x] == null) {
             moves.push([x,y+dir,0]);
-            if (p.moved == false && this.board[y+dir*2][x] == null) { // got an error, null.
+            if (p.moved == false && this.board[y+dir*2][x] == null) {
                 moves.push([x,y+dir*2,0]);
             }
         }
