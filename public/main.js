@@ -20,7 +20,6 @@ var play = new game();
 var availMoves = [];
 var selected = null;
 var boardLocked = true;
-var prev = [];
 
 function resize() {
     canvas.width = window.innerWidth*0.5;
@@ -45,8 +44,6 @@ function boardStatus(value=null) {
     }
 }
 
-var turn = 0;
-
 function click(event) {
     if (boardLocked) {
         return;
@@ -56,18 +53,22 @@ function click(event) {
     if (x < 8 && x >= 0 && y < 8 && y >= 0) {
         if (checkValid(availMoves, [x,y])) {
             if (play.board[selected[1]][selected[0]].name == "king" && Math.abs(x-selected[0]) == 2) { // handles castling
-                sendMove(7*(x!=(2-turn)),7,(5-3*turn)+(2*(x!=(6-5*turn)))*(turn*2-1),7);
-                play.move(7*(x!=(2-turn)),7,(5-3*turn)+(2*(x!=(6-5*turn)))*(turn*2-1),7);
-                turn = !turn*1;
+                sendMove(7*(x!=(2-play.turn)),7,(5-3*play.turn)+(2*(x!=(6-5*play.turn)))*(play.turn*2-1),7);
+                play.move(7*(x!=(2-play.turn)),7,(5-3*play.turn)+(2*(x!=(6-5*play.turn)))*(play.turn*2-1),7);
+                play.turn = !play.turn*1;
             }
             sendMove(selected[0],selected[1],x,y);
             play.move(selected[0],selected[1],x,y);
+            if(play.checkmate(play.board[y][x].color)) {
+                console.log("Game over");
+                endGame(flipcolor(play.board[y][x].color));
+            }
             availMoves = [];
             selected = null;
         } else if (play.board[y][x] == null || (selected != null && selected[0] == x && selected[1] == y)) {
             selected = null;
             availMoves = [];
-        } else if (play.board[y][x] != null && (play.board[y][x].color == "w" && turn == 0) || (play.board[y][x].color == "b" && turn == 1)) { //write condition to check player turn here
+        } else if (play.board[y][x] != null && (play.board[y][x].color == "w" && play.turn == 0) || (play.board[y][x].color == "b" && play.turn == 1)) { //write condition to check player play.turn here
             availMoves = play.getMoves(x,y);
             selected = [x,y];
         } else {
@@ -87,9 +88,9 @@ function draw() {
         ctx.fillRect((2*(i%4)*canvas.width/8)+(canvas.width/8)*(Math.floor(i/4)%2==0),(Math.floor(i/4))*canvas.height/8, (canvas.width/8),canvas.height/8)
     }   // draws grey squares.
 
-    for (var i = 0; i < prev.length; i++) { // draw prev moves.
+    for (var i = 0; i < play.prev.length; i++) { // draw prev moves.
         ctx.fillStyle = 'rgba(0,255,0,0.2)';
-        ctx.fillRect((prev[i][0]*canvas.width/8),prev[i][1]*canvas.height/8, (canvas.width/8),canvas.height/8)
+        ctx.fillRect((play.prev[i][0]*canvas.width/8),play.prev[i][1]*canvas.height/8, (canvas.width/8),canvas.height/8)
     }
 
     if (selected != null) { // draws selected piece

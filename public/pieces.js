@@ -1,6 +1,8 @@
 class game {
     constructor(flip=false) {
         this.board = []
+        this.turn = 0;
+        this.prev = [];
         for (var j = 0; j < 8; j++) {
             var holder = []
             for (var i = 0; i < 8; i ++) {
@@ -31,7 +33,7 @@ class game {
         }
     }
 
-    pawnMoves(p,x,y,flipped=false) {
+    pawnMoves(p,x,y,flipped) {
         var dir = -1+2*flipped;
         var moves = [];
 
@@ -39,6 +41,7 @@ class game {
         /*if (p.color == "w") {
             dir = -1;
         }*/
+        // console.log(dir,x,y+dir*2);
         if (this.board[y+dir][x] == null) {
             moves.push([x,y+dir,0]);
             if (p.moved == false && this.board[y+dir*2][x] == null) {
@@ -131,7 +134,7 @@ class game {
         }
         // castling king side
         // turn == 0 for white
-        var mappedturn = !turn * 2 - 1;
+        var mappedturn = !this.turn * 2 - 1;
         if (!p.moved && this.board[y][x+3*mappedturn] != null) { // king side castle
             if (!this.board[y][x+3*mappedturn].moved) {
                 var c = 0;
@@ -170,20 +173,15 @@ class game {
         }
     }
     // Finds king of a color and checks if its in check.
+    // swap swaps the color if true to accomodate inputs.
     check(color, swap=true) {
-        if (swap) {
-            if (color == "w") {
-                color = "b";
-            } else {
-                color = "w";
-            }
-        }
-        var coords = this.findPiece("king", color);
+        if (swap) { color = flipcolor(color); }
+        var coords = this.findPiece("king", color); // undefined issue
         var moves = []
         for (var i = 0; i < this.board.length; i++) {
             for (var j = 0; j < this.board[i].length; j++) {
                 if (this.board[i][j] != null && this.board[i][j].color != color) {
-                    var temp = this.getMoves(j,i,true);
+                    var temp = this.getMoves(j,i,false);
                     for (var k = 0; k < temp.length; k++) {
                         moves.push(temp[k]);
                     }
@@ -192,33 +190,40 @@ class game {
         }
         for (var i = 0; i < moves.length; i++) { 
             if (moves[i][0] == coords[0] && moves[i][1] == coords[1]) {
+                console.log(color, "checked.");
                 return true;
             }
         }
         return false;
     }
 
-    newcheck(move=[0,0,1,1]) {
+    checkmate(color) { // color of attacking piece (white)
         var fakegame = new game();
-        fakegame.board = [];
-        for (var i = 0; i < this.board.length; i++) {
-            var temp = [];
-            for (var j = 0; j < this.board[i].length; j++) {
-                if (this.board[i][j] == null) {
-                    temp.push(null);
-                } else {
-                    temp.push(new piece(this.board[i][j].x, this.board[i][j].y, this.board[i][j].name, this.board[i][j].color, this.board[i][j].moved));
+        fakegame = copyBoard(fakegame);
+        var from = [];
+        var moves = [];
+        for (var i = 0; i < fakegame.board.length; i++) { // store all possible moves into a list
+            for (var j = 0; j < fakegame.board[i].length; j++) {
+                if (fakegame.board[i][j] != null && fakegame.board[i][j].color != color) {
+                    moves.push(fakegame.getMoves(j,i,true)); // get moves of all defending pieces (black)
+                    from.push([j,i]);                        // so we flip to change dir to down (+)
                 }
             }
-            fakegame.board.push(temp);
         }
-        fakegame.move(move[0],move[1],move[2],move[3]);
-        // checkcheck
-        
+        for (var i = 0; i < from.length; i++) {
+            for (var j = 0; j < moves[i].length; j++) {
+                fakegame = copyBoard(fakegame);
+                fakegame.move(from[i][0], from[i][1], moves[i][j][0], moves[i][j][1]);
+                if(!fakegame.check(color,true)) { // Check if defending will still be in check (black)
+                    console.log(from[i][0], from[i][1], moves[i][j][0], moves[i][j][1]);
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     getMoves(x,y,flipped=false) {
-        // this.newcheck();
         var p = this.board[y][x];
         if (p.name == "pawn") {
             return this.pawnMoves(p,x,y,flipped);
@@ -241,7 +246,7 @@ class game {
         if (p == null) {
             return;
         }
-        this.board[toy][tox] = new piece(toy,tox,p.name,p.color);
+        this.board[toy][tox] = new piece(tox,toy,p.name,p.color);
         this.board[fromy][fromx] = null;
         this.board[toy][tox].moved = true;
         if (p.name == "pawn") { // handles promoting
@@ -249,11 +254,34 @@ class game {
                 this.board[toy][tox] = new piece(tox,toy,"queen",p.color); // could add option to select piece
             }
         }
-        prev = [[fromx,fromy],[tox,toy]];
+        this.prev = [[fromx,fromy],[tox,toy]];
         if (sequential < 2) { // if sending more than one move only toggle turn once.
-            turn = !turn*1;
+            this.turn = !this.turn*1;
         }
     }
+}
+
+function flipcolor(c) {
+    if (c == 'w') {
+        return "b";
+    }
+    return 'w';
+}
+
+function copyBoard(fakegame) {
+    fakegame.board = [];
+    for (var i = 0; i < play.board.length; i++) {
+        var temp = [];
+        for (var j = 0; j < play.board[i].length; j++) {
+            if (play.board[i][j] == null) {
+                temp.push(null);
+            } else {
+                temp.push(new piece(play.board[i][j].x, play.board[i][j].y, play.board[i][j].name, play.board[i][j].color, play.board[i][j].moved));
+            }
+        }
+        fakegame.board.push(temp);
+    }
+    return fakegame
 }
 
 class piece {

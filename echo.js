@@ -102,7 +102,27 @@ io.sockets.on('connection', function (socket) {
     console.log(a,b,c,d);
   });
 
+  socket.on("gamemsg", () => {
+    console.log("game over");
+    var whoamiindex = -1;
+    for (var i = 0; i < players.length; i++) {
+      if (socket.conn.id == players[i].id) {
+        whoamiindex = i;
+        break;
+      }
+    }
+    for (var i = 0; i < players.length; i++) {
+      if (players[i] != null) {
+        if (players[i].id == players[whoamiindex].ingamewith) {
+          players[i].socket.emit("gamemsg");
+          break;
+        }
+      }
+    }
+  })
+
   socket.on("disconnect", () => {
+    console.log(`${ip} disconnected. (${num})`);
     players = players.filter(player => player.id !== socket.conn.id);
     for (var i = 0; i < players.length; i++) {
       if (players[i].ingamewith == socket.conn.id) {
