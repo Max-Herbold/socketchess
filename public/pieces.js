@@ -193,7 +193,6 @@ class game {
                 return true;
             }
         }
-        console.log(coords,moves);
         return false;
     }
 
@@ -204,12 +203,7 @@ class game {
         } else if (p.name == "rook") {
             return this.straight(p,x,y);
         } else if (p.name == "queen") {
-            var s = this.straight(p,x,y);
-            var d = this.diagonal(p,x,y);
-            for (var i = 0; i < d.length; i++) {
-                s.push(d[i]);
-            }
-            return s;
+            return this.straight(p,x,y).concat(this.diagonal(p,x,y));
         } else if (p.name == "bishop") {
             return this.diagonal(p,x,y);
         } else if (p.name == "knight") {
