@@ -2,7 +2,7 @@ window.onresize = resize;
 window.onload = init;
 document.addEventListener("click", click);
 
-var debugging = false; // if true toggles visible dots.
+var debugging = false; // toggles visible dots.
 
 var canvas = null;
 var ctx = null;
@@ -39,7 +39,7 @@ var turn = 0;
 
 function click(event) {
     if (boardLocked) {
-        return; // checks if the board is locked
+        return;
     }
     var x = Math.floor(8*(event.clientX-Math.floor(canvas.width/2))/canvas.width);
     var y = Math.floor(8*event.clientY/canvas.height);

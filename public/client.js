@@ -35,5 +35,8 @@ function recMove(m) {
     sequential++;
     boardStatus(false); // remove this if intending to add premoving.
     play.move(m[0],m[1],m[2],m[3]);
+    if (play.check(play.board[m[3]][m[2]].color)) {
+        document.getElementById('move').textContent = "You're in check!";
+    }
     draw();
 }

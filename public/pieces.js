@@ -31,8 +31,8 @@ class game {
         }
     }
 
-    pawnMoves(p,x,y) {
-        var dir = -1;
+    pawnMoves(p,x,y,flipped=false) {
+        var dir = -1+2*flipped;
         var moves = [];
 
         // acceptable if the board is not flipped.
@@ -41,7 +41,7 @@ class game {
         }*/
         if (this.board[y+dir][x] == null) {
             moves.push([x,y+dir,0]);
-            if (p.moved == false && this.board[y+dir*2][x] == null) {
+            if (p.moved == false && this.board[y+dir*2][x] == null) { // got an error, null.
                 moves.push([x,y+dir*2,0]);
             }
         }
@@ -158,10 +158,49 @@ class game {
         return moves;
     }
 
-    getMoves(x, y) {
+    // finds a piece by name and color (only really useful for king/queen)
+    findPiece(name, color) {
+        for (var i = 0; i < this.board.length; i++) {
+            for (var j = 0; j < this.board[i].length; j++) {
+                var p = this.board[i][j];
+                if (p != null && p.name == name && p.color == color) {
+                    return [j,i];
+                }
+            }
+        }
+    }
+    // Finds king of a color and checks if its in check.
+    check(color) {
+        if (color == "w") {
+            color = "b";
+        } else {
+            color = "w";
+        }
+        var coords = this.findPiece("king", color);
+        var moves = []
+        for (var i = 0; i < this.board.length; i++) {
+            for (var j = 0; j < this.board[i].length; j++) {
+                if (this.board[i][j] != null && this.board[i][j].color != color) {
+                    var temp = this.getMoves(j,i,true);
+                    for (var k = 0; k < temp.length; k++) {
+                        moves.push(temp[k]);
+                    }
+                }
+            }
+        }
+        for (var i = 0; i < moves.length; i++) { 
+            if (moves[i][0] == coords[0] && moves[i][1] == coords[1]) {
+                return true;
+            }
+        }
+        console.log(coords,moves);
+        return false;
+    }
+
+    getMoves(x,y,flipped=false) {
         var p = this.board[y][x];
         if (p.name == "pawn") {
-            return this.pawnMoves(p,x,y);
+            return this.pawnMoves(p,x,y,flipped);
         } else if (p.name == "rook") {
             return this.straight(p,x,y);
         } else if (p.name == "queen") {
