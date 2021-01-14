@@ -53,7 +53,6 @@ function click(event) {
     if (x < 8 && x >= 0 && y < 8 && y >= 0) {
         if (checkValid(availMoves, [x,y])) { // write case to ignore castling if in check.
             if (play.checkcheck(selected[0],selected[1],x,y)) { // handles moving into check... maybe?
-                console.log("cannot move into check.");
                 res();
                 draw();
                 return;

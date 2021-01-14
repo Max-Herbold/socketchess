@@ -1,4 +1,4 @@
-const ip = "192.168.0.128:8001";
+const ip = ":8001";
 
 const socket = io.connect(ip);
 socket.on("pair", locked => startGame(locked));
