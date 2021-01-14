@@ -36,12 +36,6 @@ class game {
     pawnMoves(p,x,y,flipped) {
         var dir = -1+2*flipped;
         var moves = [];
-
-        // acceptable if the board is not flipped.
-        /*if (p.color == "w") {
-            dir = -1;
-        }*/
-        // console.log(dir,x,y+dir*2);
         if (this.board[y+dir][x] == null) {
             moves.push([x,y+dir,0]);
             if (p.moved == false && this.board[y+dir*2][x] == null) {
@@ -192,7 +186,6 @@ class game {
         }
         for (var i = 0; i < moves.length; i++) { 
             if (moves[i][0] == coords[0] && moves[i][1] == coords[1]) {
-                console.log(color, "checked.");
                 return true;
             }
         }
@@ -226,7 +219,6 @@ class game {
                 fakegame = copyBoard(fakegame);
                 fakegame.move(from[i][0], from[i][1], moves[i][j][0], moves[i][j][1]);
                 if(!fakegame.check(color,true)) { // Check if defending will still be in check (black)
-                    console.log(from[i][0], from[i][1], moves[i][j][0], moves[i][j][1]);
                     return false;
                 }
             }
