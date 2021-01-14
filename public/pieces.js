@@ -128,9 +128,9 @@ class game {
         }
         // castling king side
         // turn == 0 for white
-        if (this.check(p.color, false)) { // prevents castling while in check
-            return moves;
-        }
+        // if (this.check(p.color, false)) { // prevents castling while in check
+        //     return moves;
+        // }
         var mappedturn = !this.turn * 2 - 1;
         if (!p.moved && this.board[y][x+3*mappedturn] != null) { // king side castle
             if (!this.board[y][x+3*mappedturn].moved) {

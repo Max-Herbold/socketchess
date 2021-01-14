@@ -9,4 +9,4 @@ navigate to ip.
 **TODO**
 _Things that still need to be finished._
 
-- Hmmm....
+- Disable castling in check... previous fix gave infinite recursion.
