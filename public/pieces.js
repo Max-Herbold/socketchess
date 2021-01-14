@@ -176,12 +176,14 @@ class game {
     // swap swaps the color if true to accomodate inputs.
     check(color, swap=true) {
         if (swap) { color = flipcolor(color); }
-        var coords = this.findPiece("king", color); // undefined issue
+        var coords = this.findPiece("king", color); // undefined (null) issue on coords?
         var moves = []
         for (var i = 0; i < this.board.length; i++) {
             for (var j = 0; j < this.board[i].length; j++) {
                 if (this.board[i][j] != null && this.board[i][j].color != color) {
-                    var temp = this.getMoves(j,i,false);
+
+                    // need to flip this from check check
+                    var temp = this.getMoves(j,i,!swap); // maybe this shouldnt be hardcoded
                     for (var k = 0; k < temp.length; k++) {
                         moves.push(temp[k]);
                     }
@@ -195,6 +197,15 @@ class game {
             }
         }
         return false;
+    }
+
+    checkcheck(fromx, fromy, tox, toy) {
+        var fakegame = new game();
+        fakegame = copyBoard(fakegame);
+        fakegame.move(fromx, fromy, tox, toy);
+
+        // check if bottom color is in check. while bottom is who moved
+        return fakegame.check(fakegame.board[toy][tox].color, false);
     }
 
     checkmate(color) { // color of attacking piece (white)

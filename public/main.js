@@ -12,7 +12,7 @@ document.addEventListener('click touch', click);
 // document.addEventListener('click touch', click);
 // document.addEventListener('touchstart', click);
 
-var debugging = true; // toggles visible dots.
+var debugging = false; // toggles visible dots.
 
 var canvas = null;
 var ctx = null;
@@ -51,8 +51,14 @@ function click(event) {
     var x = Math.floor(8*(event.clientX-Math.floor(canvas.width/2))/canvas.width);
     var y = Math.floor(8*event.clientY/canvas.height);
     if (x < 8 && x >= 0 && y < 8 && y >= 0) {
-        if (checkValid(availMoves, [x,y])) {
-            if (play.board[selected[1]][selected[0]].name == "king" && Math.abs(x-selected[0]) == 2) { // handles castling
+        if (checkValid(availMoves, [x,y])) { // write case to ignore castling if in check.
+            if (play.checkcheck(selected[0],selected[1],x,y)) { // handles moving into check... maybe?
+                console.log("cannot move into check.");
+                res();
+                draw();
+                return;
+            }
+            if (play.board[selected[1]][selected[0]].name == "king" && Math.abs(x-selected[0]) == 2) { // castling
                 sendMove(7*(x!=(2-play.turn)),7,(5-3*play.turn)+(2*(x!=(6-5*play.turn)))*(play.turn*2-1),7);
                 play.move(7*(x!=(2-play.turn)),7,(5-3*play.turn)+(2*(x!=(6-5*play.turn)))*(play.turn*2-1),7);
                 play.turn = !play.turn*1;
@@ -60,23 +66,24 @@ function click(event) {
             sendMove(selected[0],selected[1],x,y);
             play.move(selected[0],selected[1],x,y);
             if(play.checkmate(play.board[y][x].color)) {
-                console.log("Game over");
                 endGame(flipcolor(play.board[y][x].color));
             }
-            availMoves = [];
-            selected = null;
+            res();
         } else if (play.board[y][x] == null || (selected != null && selected[0] == x && selected[1] == y)) {
-            selected = null;
-            availMoves = [];
+            res();
         } else if (play.board[y][x] != null && (play.board[y][x].color == "w" && play.turn == 0) || (play.board[y][x].color == "b" && play.turn == 1)) { //write condition to check player play.turn here
             availMoves = play.getMoves(x,y);
             selected = [x,y];
         } else {
-            selected = null;
-            availMoves = [];
+            res();
         }
         draw();
     }
+}
+
+function res() {
+    selected = null;
+    availMoves = [];
 }
 
 function draw() {

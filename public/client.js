@@ -1,4 +1,4 @@
-const ip = "192.168.0.10:8001";
+const ip = "192.168.0.128:8001";
 
 const socket = io.connect(ip);
 socket.on("pair", locked => startGame(locked));
@@ -50,7 +50,7 @@ function endGame() {
     boardStatus(true);
     socket.emit("gamemsg");
     document.getElementById('move').style = "font-weight: bold;";
-    document.getElementById('move').textContent = "Well played, you won!\nok?";
+    document.getElementById('move').textContent = "Well played, you won!";
 }
 
 function lost() {
